@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>clock</title>
+	<style>
+		*{
+			padding:0;
+			margin:0;
+		}
+		body, html {
+    		height: 100%;
+    		width: 100%;
+    		background:radial-gradient(farthest-side ellipse at 50% 68%, #CCDBDA 100px, #AACECF 400px,#60898A 100%);
+		}
+		.main{
+			width:350px;
+			height:350px;
+			position:absolute;
+			left:50%;
+			top:50%;
+			margin-left: -175px;
+			margin-top: -175px;
+			border-radius: 50px;
+			background:linear-gradient(#ffffff 40px,#ddecf2 210px,#d3e3e9);
+			z-index: 1;
+		}
+		.main:before{
+			position:absolute;
+			width:100%;
+			height:100%;
+			content: "";
+			border-radius:50px;
+			opacity: 0.6; 
+			filter:alpha(opacity = 60); 
+			-webkit-filter:blur(1px);
+			filter:blur(1px);
+			box-shadow: 0px -4px 3px 3px #b8bdca inset;
+			z-index: 2;
+		}
+		.main:after{
+			content: "";
+			position:absolute;
+    		height: 15px;
+    		width: 300px;
+    		left:24px;
+    		bottom:-8px;
+    		background: #2a2a2b;
+    		-webkit-filter: blur(6px); 
+    		filter:blur(6px);
+   			z-index: -2;
+		}
+	</style>
+</head>
+<body>
+	<div class="main">
+		<canvas id="canvas">
+			你的浏览器不支持，请更换浏览器后重试！
+		</canvas>
+	</div>
+	<script>
+		var Clock = function(){
+			this.widths = 350;
+			this.heights = 350; 
+			this.canvas = document.getElementById("canvas");
+			this.context = this.canvas.getContext("2d");
+			this.r = 105;
+			this.init();
+		};
+		Clock.prototype = {
+			init:function(){
+				this.initCanvas();
+				this.drawCircle();
+				this.drawNumber();
+				this.drawPointer();
+				var that = this;
+				setInterval(function(){
+					that.context.clearRect(0,0,that.widths,that.heights);
+					that.drawCircle();
+					that.drawNumber();
+					that.drawPointer();
+				},1000);
+			},
+			initCanvas:function(){
+				this.canvas.width = this.widths;
+				this.canvas.height = this.heights;
+			},
+			drawCircle:function(){
+				this.context.save();
+				this.context.beginPath();
+				this.context.arc(this.widths/2,this.heights/2,this.r,0,Math.PI*2,true);
+				this.context.closePath();
+				var g = this.context.createLinearGradient(0,35,0,350);
+				g.addColorStop(0,"#f9fdff"); 
+				g.addColorStop(1,"#d9eaf8");
+				this.context.fillStyle = g;
+  				this.context.shadowOffsetX = 0;
+  				this.context.shadowOffsetY = 6; 
+  				this.context.shadowBlur = 8; 
+  				this.context.shadowColor = "#7D91B0"; 
+				this.context.fill();
+				this.context.restore();
+			},
+			drawNumber:function(){
+				this.context.save();
+				for(var i = 0;i < 12; i++){
+					var angle = i*30;
+					angle = angle*Math.PI/180;
+					var n = (i+3 > 12) ? i+3-12:i+3;
+					var x = Math.round(Math.cos(angle)*(this.r-20));
+					var y = Math.round(Math.sin(angle)*(this.r-20));
+					this.context.fillStyle="#8DA6B8";
+					this.context.font = "bold 20px Calibri";
+					this.context.textAlign = "center";
+					this.context.textBaseline = "middle";
+					this.context.fillText(n,x+this.widths/2,y+this.heights/2);
+				}
+				this.context.restore();
+			},
+			drawPointer:function(){
+				var time = new Date();
+				var h = time.getHours();
+				var m = time.getMinutes();
+				var s = time.getSeconds();
+				var hrotate = (h*30+(m/60)*30+(s/3600)*30)*Math.PI/180;
+				var mrotate = (m*6+(s/60)*6)*Math.PI/180;
+				var srotate = (s*6)*Math.PI/180;
+				// console.log(h + ':' + m + ':' + s);
+				
+				//时针
+				this.context.save();
+				this.context.translate(this.widths/2,this.heights/2);
+				this.context.save();
+				this.context.rotate(hrotate);
+				this.context.beginPath();
+				this.context.lineCap="round";
+				this.context.moveTo(0,0);
+				this.context.lineTo(0,-40);
+				this.context.strokeStyle="#1AA9D8";
+				this.context.lineWidth=6;
+				this.context.stroke();
+				this.context.closePath();
+				this.context.restore();
+				//分针
+				this.context.save();
+				this.context.rotate(mrotate);
+				this.context.beginPath();
+				this.context.lineCap="round";
+				this.context.moveTo(0,0);
+				this.context.lineTo(0,-50);
+				this.context.strokeStyle="#23BCEF";
+				this.context.lineWidth=4;
+				this.context.stroke();
+				this.context.closePath();
+				this.context.restore();
+				//秒针
+				this.context.save();
+				this.context.rotate(srotate);
+				this.context.beginPath();
+				this.context.lineCap="round";
+				this.context.moveTo(0,0);
+				this.context.lineTo(0,-65);
+				this.context.strokeStyle="#23BCEF";
+				this.context.lineWidth=1;
+				this.context.stroke();
+				this.context.closePath();    
+				this.context.restore();
+				this.context.restore();
+			},
+		};
+		var clock = new Clock();
+	</script>
+</body>
+</html>
