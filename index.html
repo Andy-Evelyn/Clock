@@ -103,17 +103,16 @@
 			},
 			drawNumber:function(){
 				this.context.save();
-				for(var i = 0;i < 12; i++){
+				for(var i = 1;i < 13; i++){
 					var angle = i*30;
 					angle = angle*Math.PI/180;
-					var n = (i+3 > 12) ? i+3-12:i+3;
-					var x = Math.round(Math.cos(angle)*(this.r-20));
-					var y = Math.round(Math.sin(angle)*(this.r-20));
+					var x = Math.round(Math.sin(angle)*(this.r-20));
+					var y = Math.round(-Math.cos(angle)*(this.r-20));
 					this.context.fillStyle="#8DA6B8";
 					this.context.font = "bold 20px Calibri";
 					this.context.textAlign = "center";
 					this.context.textBaseline = "middle";
-					this.context.fillText(n,x+this.widths/2,y+this.heights/2);
+					this.context.fillText(i,x+this.widths/2,y+this.heights/2);
 				}
 				this.context.restore();
 			},
